@@ -1,6 +1,7 @@
 <!-- pages/[user].vue -->
 <template>
   <v-container>
+    {{ files }}
     <v-row>
       <v-col cols="12">
         <v-toolbar flat>
@@ -89,7 +90,7 @@ const submitUrl = async () => {
   }
   try {
     const { $axios } = useNuxtApp();
-    await $axios.post('/api/uploads', {
+    await $axios.post('/api/uploads/url', {
       user,
       url: newUrl.value,
     });
