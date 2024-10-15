@@ -3,8 +3,10 @@ from pydantic import BaseModel
 import os
 from datetime import datetime
 import json
+from typing import Optional
 
 app = FastAPI()
+
 # In your FastAPI application
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -22,7 +24,13 @@ app.add_middleware(
 class UploadRequest(BaseModel):
     user: str
     url: str
+    content: Optional[str] = ""
 
+class EditRequest(BaseModel):
+    user: str
+    date: str
+    index: int
+    content: Optional[str] = ""
 class ListRequest(BaseModel):
     user: str
 
@@ -62,15 +70,41 @@ async def upload_url(data: UploadRequest):
         json_data["length"] = 0
 
     json_data["Data"].append({
+        "id": json_data["length"],
         "type": "url",
         "url": data.url,
-        "content": "",
+        "content": data.content,
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
     json_data["length"] += 1
     write_json_data(file_path, json_data)
     
     return {"message": f"URL added to {current_date}.diary"}
+
+@app.post("/api/edit/url")
+async def edit_url(data: EditRequest):
+    user_directory = f"./UserData/{data.user}"
+    if not os.path.exists(user_directory):
+        raise HTTPException(status_code=404, detail="User directory not found")
+    
+    # date format is "%m-%d", check the data.date is in this format
+    try:
+        datetime.strptime(data.date, "%m-%d")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format")
+
+    file_path = os.path.join(user_directory, f"{data.date}.diary")
+    json_data = get_json_data(file_path)
+    if json_data["Data"] is None or json_data["length"] is None or json_data["length"] <= data.index:
+        raise HTTPException(status_code=404, detail="No data found for the given date")
+
+    if json_data["Data"][data.index]["type"] != "url":
+        raise HTTPException(status_code=400, detail="Index does not point to a URL")
+    
+    json_data["Data"][data.index]["content"] = data.content
+    write_json_data(file_path, json_data)
+
+    return {"message": f"URL at index {data.index} edited in {data.date}.diary", "json_data": json_data}
 
 # API 2: /api/list
 @app.post("/api/list")
