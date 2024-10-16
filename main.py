@@ -24,7 +24,8 @@ app.add_middleware(
 class UploadRequest(BaseModel):
     user: str
     url: str
-    content: Optional[str] = ""
+    title: str
+    content: str
 
 class EditRequest(BaseModel):
     user: str
@@ -72,7 +73,8 @@ async def upload_url(data: UploadRequest):
     json_data["Data"].append({
         "id": json_data["length"],
         "type": "url",
-        "url": data.url,
+        "position": data.url,
+        "title" : data.title,
         "content": data.content,
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })

@@ -10,10 +10,10 @@
         :class="obj.type"
         @click="openDialog(index)"
       >
-        <v-list-item-title>{{ obj.url }} {{ index }}</v-list-item-title>
+        <v-list-item-title>{{ obj.title }} {{ index }}</v-list-item-title>
         <v-dialog v-model="dialog[index]" max-width="90%">
           <v-card>
-            <v-card-title>URL: {{ obj.url }}</v-card-title>
+            <v-card-title>URL: {{ obj.position }}</v-card-title>
             <v-card-text>
               <v-textarea v-model="obj.content" label="Summary" required readonly max-rows="20" auto-grow no-resize></v-textarea>
             </v-card-text>
