@@ -53,4 +53,9 @@ const closeDialog = (index) => {
   background: lightblue;
   margin: 20px;
 }
+
+.v-list-item-title {
+  white-space: wrap;
+  overflow: visible;
+}
 </style>
