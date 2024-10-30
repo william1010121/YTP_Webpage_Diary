@@ -7,8 +7,7 @@ client = TestClient(app)
 # Sample valid and invalid payloads for testing
 
 valid_upload_payload = {
-    "user": "test_user",
-    "url": "https://example.com/file",
+    "user": "test_user", "url": "https://example.com/file",
     "title": "Test File",
     "content": "This is a test file."
 }
@@ -42,12 +41,24 @@ invalid_list_payload = {
     # "user": "test_user"  # Missing required field
 }
 
+valid_summary_payload = {
+    "user": "test_user",
+    "date": "05-02"
+}
+
+invalid_summary_payload = {
+    "user": "test_user",
+    # "date": "04-30"  # Missing required field
+}
+
 def precreate_user_directory(date):
     def decorator(func):
         def wrapper(*args, **kwargs):
             # Create a user directory before running the test
             import os
             user_directory = "./UserData/test_user"
+            if os.path.exists(f"user_directory/{date}.diary"):
+                os.remove(f"user_directory/{date}.diary")
             os.makedirs(user_directory, exist_ok=True)
             with open(f"{user_directory}/{date}.diary", "w") as f:
                 f.write('{"Data": [{"id": 0, "type": "url", "content": "https://example.com/file", "title": "Test File"}], "length": 1}')
@@ -90,6 +101,7 @@ def test_edit_url_validation_error():
     assert "detail" in response.json()
     assert isinstance(response.json()["detail"], list)
 
+@precreate_user_directory(date="05-01")
 def test_list_files_success():
     response = client.post("/api/list", json=valid_list_payload)
     assert response.status_code == 200
@@ -97,9 +109,55 @@ def test_list_files_success():
     # For example:
     # assert isinstance(response.json(), list)
 
+@precreate_user_directory(date="05-02")
 def test_list_files_validation_error():
     response = client.post("/api/list", json=invalid_list_payload)
     assert response.status_code == 422
     # Verify the structure of the validation error
     assert "detail" in response.json()
     assert isinstance(response.json()["detail"], list)
+
+
+@precreate_user_directory(date="05-02")
+def test_summary_url_success():
+    response = client.post("/api/summary/summarize", json=valid_summary_payload)
+    assert response.status_code == 200
+    # Add assertions based on the expected successful response
+    # For example:
+    # assert "id" in response.json()
+
+@precreate_user_directory(date="05-03")
+def test_summary_url_validation_error():
+    response = client.post("/api/summary/summarize", json=invalid_summary_payload)
+    assert response.status_code == 422
+    # Verify the structure of the validation error
+    assert "detail" in response.json()
+    assert isinstance(response.json()["detail"], list)
+
+@precreate_user_directory(date="05-02")
+def test_get_summary_success():
+    response = client.post("/api/summary/get_summary", json=valid_summary_payload)
+    assert response.status_code == 200
+    # Add assertions based on the expected successful response
+    # For example:
+    # assert "id" in response.json()
+@precreate_user_directory(date="05-02")
+def test_get_summary_validation_error():
+    response = client.post("/api/summary/get_summary", json=invalid_summary_payload)
+    assert response.status_code == 422
+    # Verify the structure of the validation error
+    assert "detail" in response.json()
+    assert isinstance(response.json()["detail"], list)
+
+@precreate_user_directory(date="05-02")
+def test_get_summary_not_found():
+    missing_summary_payload = {
+        "user": "test_user",
+        "date": "05-02"
+    }
+    import os
+    if os.path.exists("./UserData/test_user/summary/05-02.summary"):
+        os.remove("./UserData/test_user/summary/05-02.summary")
+    response = client.post("/api/summary/get_summary", json=missing_summary_payload)
+    assert response.status_code == 200
+    assert response.json() == {"message": "No summary found", "summary": {"response": ""}, "metadata": {}}

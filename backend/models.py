@@ -12,11 +12,9 @@ class EditRequest(BaseModel):
     date: str
     index: int
     content: Optional[str] = ""
-
 class SummaryRequest(BaseModel):
     user: str
     date: str
-    type: str
+
 class ListRequest(BaseModel):
     user: str
-

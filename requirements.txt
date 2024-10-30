@@ -4,3 +4,9 @@ uvicorn
 
 pytest
 httpx
+python-dotenv   
+
+# install google langchain api
+langchain-google-genai
+google-generativeai
+langchain

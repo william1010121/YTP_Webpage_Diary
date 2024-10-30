@@ -19,6 +19,8 @@ async def list_files(data: ListRequest):
     # Iterate through files and get content
     for filename in os.listdir(user_directory):
         file_path = os.path.join(user_directory, filename)
+        if not filename.endswith(".diary"):
+            continue
         file_json = getJsonData(file_path)
 
         file_list.append({"filename": filename.replace(".diary", ""), "content": file_json["Data"], "length": file_json["length"]}) 

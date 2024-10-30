@@ -26,5 +26,5 @@ UserData
 
 # ignore the pycache and pytest cache
 __pycache__
-.pytest_cache
+.pytest_cache/
 .venv

@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 import json
 from typing import Optional
-from backend.routers import upload, edit, list
+from backend.routers import upload, edit, list, summary
 
 app = FastAPI()
 
@@ -22,6 +22,7 @@ app.add_middleware(
 app.include_router(upload.router, prefix="/api/uploads", tags=["uploads"])
 app.include_router(edit.router, prefix="/api/edit", tags=["edit"])
 app.include_router(list.router, prefix="/api", tags=["list"])
+app.include_router(summary.router, prefix="/api/summary", tags=["summary"])
 
 @app.get("/")
 async def root():
