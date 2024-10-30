@@ -24,4 +24,7 @@ logs
 !.env.example
 UserData
 
+# ignore the pycache and pytest cache
 __pycache__
+.pytest_cache
+.venv
