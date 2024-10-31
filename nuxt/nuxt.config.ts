@@ -2,9 +2,11 @@
 export default defineNuxtConfig({
   // ... existing configurations
   devtools: { enabled: true },
+
   css: [
     'vuetify/styles', // Import Vuetify styles
   ],
+
   plugins: [
     '~/plugins/axios.js',
     '~/plugins/vuetify.js', // Register Vuetify plugin
@@ -18,4 +20,6 @@ export default defineNuxtConfig({
       noExternal: ['vuetify'],
     },
   },
+
+  compatibilityDate: '2024-10-30',
 })

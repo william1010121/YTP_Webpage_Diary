@@ -1,7 +1,8 @@
 <!-- pages/[user].vue -->
 <template>
   <v-container>
-    {{ files }}
+    {{ files[1] }}
+    {{ summary[1] }}
     <v-row>
       <v-col cols="12">
         <v-toolbar flat>
@@ -28,7 +29,7 @@
         sm="6"
         md="4"
       >
-        <FileCard :file="file" />
+        <FileCard :file="file" :summary="summary[index]" @resummarize="(date) => {reSummarize(index,date);}"/>
       </v-col>
     </v-row>
 
@@ -70,6 +71,7 @@ const route = useRoute();
 const user = route.params.user;
 
 const files = ref([]);
+const summary = ref([]);
 const showForm = ref(false);
 const newUrl = ref('');
 
@@ -78,8 +80,23 @@ const fetchFiles = async () => {
     const { $axios } = useNuxtApp();
     const response = await $axios.post('/api/list', { user });
     files.value = response.data.files || [];
+    for (let i = 0; i < files.value.length; i++) {
+      const file = files.value[i];
+      const response = await $axios.post('/api/summary/get_summary', {user, date: file.filename});
+      summary.value.push(response || []);
+    }
   } catch (error) {
     console.error('Error fetching files:', error);
+  }
+};
+
+const reSummarize = async (index, date) => {
+  try {
+    const { $axios } = useNuxtApp();
+    const response = await $axios.post('/api/summary/summarize', { user, date});
+    summary.value[index] = response || [];
+  } catch (error) {
+    console.error('Error resummarizing:', error);
   }
 };
 
