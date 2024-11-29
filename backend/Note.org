@@ -1,0 +1,74 @@
+#+TITLE: Vue Flow Tricks
+#+AUTHOR: 郭勝威
+#+DATE: 2024-11-28
+#+LATEX_COMPILER: xelatex
+
+* Vue Flow
+** 500 Window NOt Defined
+#+BEGIN_SRC Vue
+  <client-only></client-only>
+#+END_SRC
+- it is because the nuxt my compile the code at the *server* so you need to specific it only render at the client
+** Minimal work code
+#+BEGIN_SRC html
+  <script lang="ts" setup>
+import { h, ref } from 'vue'
+import { Background } from '@vue-flow/background'
+import { Controls } from '@vue-flow/controls'
+import { MiniMap } from '@vue-flow/minimap'
+import { VueFlow, useVueFlow, type Node, type Edge } from '@vue-flow/core'
+
+const { onConnect, addEdges } = useVueFlow()
+
+const nodes = ref<Node[]>([
+  { id: '1', type: 'input', label: 'Node 1', position: { x: 250, y: 5 } },
+  { id: '2', type: 'output', label: 'Node 2', position: { x: 100, y: 100 } },
+  { id: '3', type: 'custom', label: 'Node 3', position: { x: 400, y: 100 } },
+])
+
+const edges = ref<Edge[]>([
+  { id: 'e1-2', source: '1', target: '2', type: 'custom' },
+  { id: 'e1-3', source: '1', target: '3', animated: true },
+])
+
+onConnect((params) => {
+  addEdges([params])
+})
+</script>
+
+<template>
+  <client-only>
+  <div style="height: 100vh">
+    <VueFlow
+      v-model:nodes="nodes"
+      v-model:edges="edges"
+      fit-view-on-init
+      class="vue-flow-basic-example"
+      :default-zoom="1.5"
+      :min-zoom="0.2"
+      :max-zoom="4"
+    >
+      <Background pattern-color="#aaa" :gap="8" />
+
+      <MiniMap />
+
+      <Controls />
+    </VueFlow>
+  </div>
+  </client-only>
+</template>
+
+<style>
+/* import the necessary styles for Vue Flow to work */
+@import '@vue-flow/core/dist/style.css';
+
+/* import the default theme, this is optional but generally recommended */
+@import '@vue-flow/core/dist/theme-default.css';
+@import '@vue-flow/controls/dist/style.css';
+@import '@vue-flow/minimap/dist/style.css';
+</style>
+
+#+END_SRC
+
+
+** test
