@@ -9,24 +9,37 @@ class NodeDataType(str,Enum) :
     relate = "relate"
     other = "other"
 
-    
-
 class Node(BaseModel) :
     ID: str
     children: list[str] # node ID
 
 class Structure(BaseModel) :
-    nodes: dict[str, Node] 
+    nodes: dict[str, Node]
 
 
 # Define request body schemas
+class ListProjectRequest(BaseModel):
+    user: str
+class ProjectRequest(BaseModel) :
+    user: str
+    projectId: str
+class ProjectNodeRequest(BaseModel) :
+    user: str
+    projectId: str
+    nodeId: str
 class UploadRequest(BaseModel):
     user: str
+    projectId: str
     nodeId: str
-    nodetype: NodeDataType
+    urlType: NodeDataType
     url: str
     title: str
     content: str
+
+class createNodeRequest(BaseModel):
+   user: str
+   projectId: str
+   nodeTitle: Optional[str] = "New Node"
 
 class EditRequest(BaseModel):
     user: str
@@ -52,17 +65,8 @@ class ListRequest(BaseModel):
 #     user: str
 #     projectId: str
 
-class GetProjectStructureRequest(BaseModel):
+class createEdgeRequest(BaseModel) :
     user: str
     projectId: str
-
-class UpdateProjectStructureRequest(BaseModel):
-    user: str
-    projectId: str
-    structure: dict[str, Node]
-
-class GetNodeRequest(BaseModel):
-    user: str
-    nodeId: str    
-
-
+    StartNode: str
+    EndNode: str

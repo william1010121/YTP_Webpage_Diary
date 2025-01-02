@@ -1,84 +1,121 @@
 import os
 import json
-from model.Node import Node
+from backend.model.Node import Node
 
+class ReadWriteLoader:
+    def __init__(self,dirPath):
+        self.dirPath = dirPath
+        return
+    def exists(self,file):
+        print("Path: ",os.path.join(self.dirPath,file))
+        return os.path.exists(os.path.join(self.dirPath,file))
+    def read(self,file):
+        if not self.exists(file):
+            return {}
+        with open(os.path.join(self.dirPath,file), 'r') as f:
+            return json.load(f)
+    def write(self,file, data):
+        with open(os.path.join(self.dirPath,file), 'w') as f:
+            json.dump(data, f)
+        return
+# Requirement: project Id and the root Dir
+# Parent of : Nodeloader, configLoader
+# should also read the config file and the node file
 class GraphLoader:
     def __init__(self, ProjectName, rootDir) :
         self.ProjectName = ProjectName
-        self.configLoader = ConfigLoader(ProjectName, rootDir)
-        self.nodeLoader = NodeLoader(ProjectName, rootDir)
+        self.nodeLoader = NodeLoader(ReadWriteLoader(os.path.join(rootDir, "Node")))
+        self.ifNotExistsCreate(ProjectName, os.path.join(rootDir,"Project"))
+        # self.configLoader = ConfigLoader(ProjectName,os.path.join(rootDir,"Project"))
+        self.configLoader = ConfigLoader(ReadWriteLoader(os.path.join(rootDir, "Project", ProjectName)))
+        return
+    def ifNotExistsCreate(self, ProjectName, rootDir):
+        print(os.path.join(rootDir, ProjectName))
+        if os.path.exists(os.path.join(rootDir, ProjectName)):
+            return
+        os.makedirs(os.path.join(rootDir, ProjectName))
+        rootNode = Node(True, {"title":"Root"})
+        # check if structure.json exists
+        structPath = os.path.join(rootDir, ProjectName, "structure.json")
+        if not os.path.exists(structPath):
+            with open(structPath, 'w') as f:
+                json.dump({f"{rootNode.ID}" : [],"nodeTitle":{f"{rootNode.ID}" : f"{rootNode.title}"}}, f)
+                # check if node.json exists
+        nodePath = os.path.join(rootDir, ProjectName, "node.json")
+        if not os.path.exists(nodePath):
+            with open(nodePath, 'w') as f:
+                json.dump({"K":200}, f)
+        self.nodeLoader.writeNodes([rootNode])
+        return
+    def createNode(self, nodeTitle="New Node") :
+        newNode = Node(True, {"title":nodeTitle})
+        self.nodeLoader.writeNode(newNode.ID, newNode)
+        self.configLoader.structureConfig[newNode.ID] = []
+        self.configLoader.structureConfig.setdefault("nodeTitle",{})[newNode.ID] = newNode.title
+        return newNode.ID
+    def insertNodeUrl(self, NodeID, data) :
+        node = Node(False,self.nodeLoader.loadNode(NodeID))
+        node.insertUrl(data.urlType.value, data)
+        self.nodeLoader.writeNode(NodeID, node)
+        return node.exportJson()
+    def nodeExists(self, NodeID) :
+        return self.nodeLoader.nodeExists(NodeID)
+    def getNode(self, NodeID) :
+        return self.nodeLoader.loadNode(NodeID)
+    def createEdge(self,startNodeId, endNodeId):
+        self.configLoader.structureConfig[startNodeId].append(endNodeId)
+        self.configLoader.writeStructureConfig()
+        return self.configLoader.getStructureConfig()
+    def getStructure(self) :
+        return self.configLoader.getStructureConfig()
+    def getNodeConfig(self) :
+        return self.configLoader.getNodeConfig()
+    def close(self) :
+        self.configLoader.writeNodeConfig()
+        self.configLoader.writeStructureConfig()
         return
 
+
+# Requirement
 class ConfigLoader:
-    def __init__(self, ProjectName, rootDir) :
-        self.ProjectName = ProjectName
-        self.rootDir = rootDir
+    def __init__(self, rwLoader: ReadWriteLoader):
+        self.rwLoader = rwLoader
         self.nodeConfig = self.loadNodeConfig()
         self.structureConfig = self.loadStructureConfig()
         return
-
     def loadStructureConfig(self):
-        structPath = os.path.join(self.rootDir, self.ProjectName, "structure.json")
-        if not os.path.exists(structPath):
-            print("Structure file not found")
-            return {}
-        with open(structPath, 'r') as f:
-            return json.load(f)
-
+        return self.rwLoader.read("structure.json")
     def loadNodeConfig(self):
-        nodePath = os.path.join(self.rootDir, self.ProjectName, "node.json")
-        if not os.path.exists(nodePath):
-            print("Node file not found")
-            return {}
-        with open(nodePath, 'r') as f:
-            return json.load(f)
-
+        return self.rwLoader.read("node.json")
+    def nodeIdList(self) :
+        return list(self.structureConfig.keys())
     def getNodeConfig(self):
         return self.nodeConfig
-
     def getStructureConfig(self):
         return self.structureConfig
-    def writeNodeConfig(self, nodeConfig):
-        nodePath = os.path.join(self.rootDir, self.ProjectName, "node.json")
-        with open(nodePath, 'w') as f:
-            json.dump(nodeConfig, f)
-        return
-    def writeStructureConfig(self, structureConfig):
-        structPath = os.path.join(self.rootDir, self.ProjectName, "structure.json")
-        with open(structPath, 'w') as f:
-            json.dump(structureConfig, f)
-        return
+    def writeNodeConfig(self):
+        return self.rwLoader.write("node.json", self.nodeConfig)
+    def writeStructureConfig(self):
+        return self.rwLoader.write("structure.json", self.structureConfig)
 
 class NodeLoader:
-    def __init__(self, ProjectName, rootDir) :
-        self.ProjectName = ProjectName
-        self.rootDir = rootDir
-        self.NodePath = os.path.join(self.rootDir, self.ProjectName)
+    def __init__(self, rwLoader: ReadWriteLoader) :
+        self.rwLoader = rwLoader
         return
-
-    def NodePath(self, NodeID):
-        return os.path.join(self.NodePath, NodeID)
-
+    def nodeExists(self, NodeID):
+        return self.rwLoader.exists(NodeID)
     def loadNode(self, NodeID):
-        nodePath = self.NodePath(NodeID)
-        if not os.path.exists(nodePath):
-            print("Node file not found")
-            return {}
-        with open(nodePath, 'r') as f:
-            return Node(json.load(f))
+        return self.rwLoader.read(NodeID)
     def writeNode(self, NodeID, node):
-        nodePath = self.NodePath(NodeID)
-        with open(nodePath, 'w') as f:
-            json.dump(node.exportJson(), f)
-        return
-
+        return self.rwLoader.write(NodeID, node.exportJson())
     def getNodes(self, NodeIDList) :
         nodeList = []
         for NodeID in NodeIDList:
             node = self.loadNode(NodeID)
-            nodeList.append(Node(node))
+            nodeList.append(Node(False,node))
         return nodeList
-    def writeNodes(self, nodeList) :
+    def writeNodes(self, nodeList: list[Node]) :
         for node in nodeList:
             self.writeNode(node.ID, node)
         return
+

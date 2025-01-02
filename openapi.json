@@ -44,6 +44,84 @@
         }
       }
     },
+    "/api/uploads/create_node": {
+      "post": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Create Node",
+        "operationId": "create_node_api_uploads_create_node_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createNodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/uploads/create_edge": {
+      "post": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Create Edge",
+        "operationId": "create_edge_api_uploads_create_edge_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createEdgeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/edit/url": {
       "post": {
         "tags": [
@@ -95,6 +173,162 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ListRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_project_list": {
+      "post": {
+        "tags": [
+          "list"
+        ],
+        "summary": "Getprojectlist",
+        "operationId": "getProjectList_api_get_project_list_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListProjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_structure": {
+      "post": {
+        "tags": [
+          "list"
+        ],
+        "summary": "Getprojectstructure",
+        "operationId": "getProjectStructure_api_get_structure_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_nodeconfig": {
+      "post": {
+        "tags": [
+          "list"
+        ],
+        "summary": "Getnodeconfig",
+        "operationId": "getNodeConfig_api_get_nodeconfig_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_node": {
+      "post": {
+        "tags": [
+          "list"
+        ],
+        "summary": "Getnode",
+        "operationId": "getNode_api_get_node_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectNodeRequest"
               }
             }
           },
@@ -225,6 +459,10 @@
             "type": "string",
             "title": "User"
           },
+          "nodeId": {
+            "type": "string",
+            "title": "Nodeid"
+          },
           "date": {
             "type": "string",
             "title": "Date"
@@ -249,6 +487,7 @@
         "type": "object",
         "required": [
           "user",
+          "nodeId",
           "date",
           "index"
         ],
@@ -267,6 +506,19 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "ListProjectRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user"
+        ],
+        "title": "ListProjectRequest"
+      },
       "ListRequest": {
         "properties": {
           "user": {
@@ -279,6 +531,56 @@
           "user"
         ],
         "title": "ListRequest"
+      },
+      "NodeDataType": {
+        "type": "string",
+        "enum": [
+          "important",
+          "relate",
+          "other"
+        ],
+        "title": "NodeDataType"
+      },
+      "ProjectNodeRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User"
+          },
+          "projectId": {
+            "type": "string",
+            "title": "Projectid"
+          },
+          "nodeId": {
+            "type": "string",
+            "title": "Nodeid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "projectId",
+          "nodeId"
+        ],
+        "title": "ProjectNodeRequest"
+      },
+      "ProjectRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User"
+          },
+          "projectId": {
+            "type": "string",
+            "title": "Projectid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "projectId"
+        ],
+        "title": "ProjectRequest"
       },
       "SummaryRequest": {
         "properties": {
@@ -304,6 +606,17 @@
             "type": "string",
             "title": "User"
           },
+          "projectId": {
+            "type": "string",
+            "title": "Projectid"
+          },
+          "nodeId": {
+            "type": "string",
+            "title": "Nodeid"
+          },
+          "urlType": {
+            "$ref": "#/components/schemas/NodeDataType"
+          },
           "url": {
             "type": "string",
             "title": "Url"
@@ -320,6 +633,9 @@
         "type": "object",
         "required": [
           "user",
+          "projectId",
+          "nodeId",
+          "urlType",
           "url",
           "title",
           "content"
@@ -358,6 +674,64 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "createEdgeRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User"
+          },
+          "projectId": {
+            "type": "string",
+            "title": "Projectid"
+          },
+          "StartNode": {
+            "type": "string",
+            "title": "Startnode"
+          },
+          "EndNode": {
+            "type": "string",
+            "title": "Endnode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "projectId",
+          "StartNode",
+          "EndNode"
+        ],
+        "title": "createEdgeRequest"
+      },
+      "createNodeRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User"
+          },
+          "projectId": {
+            "type": "string",
+            "title": "Projectid"
+          },
+          "nodeTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nodetitle",
+            "default": "New Node"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "projectId"
+        ],
+        "title": "createNodeRequest"
       }
     }
   }

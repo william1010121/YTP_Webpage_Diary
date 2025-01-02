@@ -1,21 +1,21 @@
 class Node :
     def __init__ (self, create = False, data={}) :
         if create :
-            self.create()
+            self.create(title=data["title"])
         else :
             self.importJson(data)
 
-    def create (self) :
-        from randm import choice
+    def create (self, title = "new Node") :
+        from random import choice
         from string import ascii_letters
-        self.ID = ''.join(choice(ascii_letters) for i in range(20))
-        self.title = ""
-        self.important_Data = Knowledge()
-        self.relate_Data = Knowledge()
-        self.other_Data = Knowledge()
+        self.ID = ''.join(choice(ascii_letters) for i in range(5))
+        self.title = title
+        self.important_Data = Knowledges()
+        self.relate_Data = Knowledges()
+        self.other_Data = Knowledges()
         self.Summary = ""
         return
-        
+
     def exportJson (self) :
         return {
             "ID" : self.ID,
@@ -33,8 +33,27 @@ class Node :
         self.other_Data.knowledges = data["other_Data"]
         self.Summary = data["Summary"]
         return
-        
-        
-class Knowledge :
-    def __init__ (self, knowledges = []):
-        self.knowledges = knowledges
+    def insertUrl(self, urlType, data) :
+        print(urlType)
+        if urlType == "important" :
+            self.important_Data.appendKnowedge(data.url, data.title, data.content)
+        elif urlType == "relate" :
+            self.relate_Data.appendKnowedge(data.url, data.title, data.content)
+        elif urlType == "other" :
+            self.other_Data.appendKnowedge(data.url, data.title, data.content)
+        return
+
+class Knowledges :
+    def __init__ (self, knowledges = None):
+        if knowledges is None :
+            self.knowledges = []
+        else :
+            self.knowledges = knowledges
+        return
+    def appendKnowedge(self, url, title, content) :
+        self.knowledges.append({
+            "url" : url,
+            "title" : title,
+            "content" : content
+        })
+        return

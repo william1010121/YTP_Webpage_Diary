@@ -1,0 +1,212 @@
+* Api Test
+:PROPERTIES:
+:header-args: :host 127.0.0.1:8000 :pretty
+:END:
+
+** functions
+
+*** list(user)
+#+NAME: list
+#+begin_src http :var user="guosw"
+POST /api/list
+Content-Type: application/json
+
+{
+  "user" : "${user}"
+}
+#+end_src
+
+*** ping()
+#+NAME: ping
+#+begin_src http
+  GET /
+#+end_src
+
+*** getProjectList(user)
+#+NAME: getProjectList
+#+begin_src http :var user="guosw"
+  POST /api/get_project_list
+  Content-Type: application/json
+
+  {
+  "user": "${user}"
+  }
+#+end_src
+
+*** getProjectStructure(user,projectId)
+
+
+#+NAME: getProjectStructure
+#+begin_src http :var user="guosw" :var projectId="test"
+  POST /api/get_structure
+  Content-Type: application/json
+
+  {
+  "user": "${user}",
+  "projectId": "${projectId}"
+  }
+#+end_src
+
+*** getNodeConfig(user,projectId)
+#+NAME: getNodeConfig
+#+begin_src http :var user="guosw" :var projectId="test"
+  POST /api/get_nodeconfig
+  Content-Type: application/json
+
+  {
+  "user": "${user}",
+  "projectId": "${projectId}"
+  }
+#+end_src
+
+*** createNode(user,projectId)
+#+NAME: createNode
+#+begin_src http :var user="guosw" :var projectId="test" :var nodeTitle="New Node"
+  POST /api/uploads/create_node
+  Content-Type: application/json
+
+  {
+  "user": "${user}",
+  "projectId": "${projectId}",
+  "nodeTitle": "${nodeTitle}"
+  }
+#+end_src
+*** createEdge(user,projectId,StartNode,EndNode)
+#+NAME: createEdge
+#+begin_src http :var user="guosw" :var projectId="test" :var StartNode="1" :var EndNode="2"
+  POST /api/uploads/create_edge
+  Content-Type: application/json
+
+  {
+  "user": "${user}",
+  "projectId": "${projectId}",
+  "StartNode": "${StartNode}",
+  "EndNode": "${EndNode}"
+  }
+#+end_src
+*** uploadUrl(user,projectId,nodeId,urltype,url,title,content)
+#+NAME: uploadUrl
+#+begin_src http :var user="guosw" :var projectId="1" :var nodeId="id" :var urlType="type" :var url="url" :var title="title" :var content="content"
+  POST /api/uploads/url
+  Content-Type: application/json
+
+  {
+  "user": "${user}",
+  "projectId": "${projectId}",
+  "nodeId": "${nodeId}",
+  "urlType": "${urlType}",
+  "url": "${url}",
+  "title": "${title}",
+  "content": "${content}"
+  }
+#+end_src
+
+
+
+*** getNode(user,projectId,nodeId)
+#+NAME: getNode
+#+begin_src http :var user="guosw" :var projectId="test" :var nodeId="id"
+  POST /api/get_node
+  Content-Type: application/json
+
+  {
+  "user": "${user}",
+  "projectId": "${projectId}",
+  "nodeId": "${nodeId}"
+  }
+#+end_src
+
+
+** list
+*** list  diary
+#+CALL: ping()
+
+*** list project
+#+CALL: getProjectList(user="guosw")
+
+#+RESULTS:
+: {
+:   "project-length": 3,
+:   "projects": [
+:     "test-graph",
+:     "test",
+:     "test-upload-url"
+:   ]
+: }
+
+*** get project structure
+#+CALL: getProjectStructure(user="guosw",projectId="test")
+
+
+*** get node config
+#+CALL: getNodeConfig(user="guosw",projectId="test")
+*** Test New Node
+#+CALL: createNode(user="guosw",projectId="test-graph",nodeTitle="Test")
+
+#+RESULTS:
+: {
+:   "message": "Node created with ID MTRjG",
+:   "ID": "MTRjG"
+: }
+
+#+CALL: getProjectStructure(user="guosw",projectId="test-graph")
+
+#+RESULTS:
+#+begin_example
+{
+  "structure": {
+    "ywSot": [],
+    "nodeTitle": {
+      "ywSot": "Root",
+      "MTRjG": "Test"
+    },
+    "MTRjG": []
+  }
+}
+#+end_example
+
+*** Test Create Edge
+#+CALL: createEdge(user="guosw",projectId="test-graph",StartNode="TxXjF",EndNode="ICgHx")
+
+*** Test upload url
+#+CALL: getProjectStructure(user="guosw",projectId="test-upload-url")
+
+#+RESULTS:
+: {
+:   "structure": {
+:     "UGHdi": [],
+:     "nodeTitle": {
+:       "UGHdi": "Root"
+:     }
+:   }
+: }
+
+#+CALL: uploadUrl(user="guosw",projectId="test-upload-url",nodeId="vPyyI",urlType="important",title="Test upload url",content="This is the Content")
+*** Ttest Get Node
+#+CALL: getProjectStructure(user="guosw",projectId="test-upload-url")
+
+#+RESULTS:
+: {
+:   "structure": {
+:     "UGHdi": [],
+:     "nodeTitle": {
+:       "UGHdi": "Root"
+:     }
+:   }
+: }
+
+#+CALL: getNode(user="guosw",projectId="test-upload-url",nodeId="UGHdi")
+
+#+RESULTS:
+#+begin_example
+{
+  "node": {
+    "ID": "UGHdi",
+    "title": "Root",
+    "important_Data": [],
+    "relate_Data": [],
+    "other_Data": [],
+    "Summary": ""
+  }
+}
+#+end_example
