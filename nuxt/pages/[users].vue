@@ -80,7 +80,7 @@ const fetchFiles = async () => {
     const { $axios } = useNuxtApp();
     const response = await $axios.post('/api/list', { user });
     files.value = response.data.files || [];
-    for (let i = 0; i < files.value.length; i++) {
+    for (let i = 0; i < files.viiialue.length; i++) {
       const file = files.value[i];
       const response = await $axios.post('/api/summary/get_summary', {user, date: file.filename});
       summary.value.push(response || []);

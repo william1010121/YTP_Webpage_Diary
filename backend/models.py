@@ -35,6 +35,15 @@ class UploadRequest(BaseModel):
     url: str
     title: str
     content: str
+class ImportMarkdownRequest(BaseModel):
+    user: str
+    projectId: str
+    markdown: str
+class ImportJsonRequest(BaseModel):
+    user: str
+    projectId: str
+    json: dict
+
 
 class createNodeRequest(BaseModel):
    user: str

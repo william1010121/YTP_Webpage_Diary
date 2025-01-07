@@ -24,6 +24,7 @@ class ReadWriteLoader:
 class GraphLoader:
     def __init__(self, ProjectName, rootDir) :
         self.ProjectName = ProjectName
+        os.makedirs(os.path.join(rootDir, "Node"), exist_ok=True)
         self.nodeLoader = NodeLoader(ReadWriteLoader(os.path.join(rootDir, "Node")))
         self.ifNotExistsCreate(ProjectName, os.path.join(rootDir,"Project"))
         # self.configLoader = ConfigLoader(ProjectName,os.path.join(rootDir,"Project"))
@@ -47,8 +48,8 @@ class GraphLoader:
                 json.dump({"K":200}, f)
         self.nodeLoader.writeNodes([rootNode])
         return
-    def createNode(self, nodeTitle="New Node") :
-        newNode = Node(True, {"title":nodeTitle})
+    def createNode(self, nodeTitle="New Node", nodeContent=None) :
+        newNode = Node(True, {"title":nodeTitle, "content":nodeContent})
         self.nodeLoader.writeNode(newNode.ID, newNode)
         self.configLoader.structureConfig[newNode.ID] = []
         self.configLoader.structureConfig.setdefault("nodeTitle",{})[newNode.ID] = newNode.title
@@ -74,6 +75,22 @@ class GraphLoader:
         self.configLoader.writeNodeConfig()
         self.configLoader.writeStructureConfig()
         return
+    def importJson(self, json) :
+        if "Graph" not in json :
+            return {"status": "404", "message": "Invalid Json, Graph key not found"}
+        if "Node" not in json :
+            return {"status": "404", "message": "Invalid Json, Node key not found"}
+        Graph :dict = json["Graph"]
+        Node :dict = json["Node"]
+        # create node for each node in the json and have the dictionry , the key is the origin and the value is the Id
+        NodeIdDict = {
+            key: self.createNode(nodeTitle=value["Title"], nodeContent=value["Content"]) for key, value in Node.items()
+        }
+        for key, value in Graph.items():
+            for node in value:
+                self.createEdge(NodeIdDict[key], NodeIdDict[node])
+        return {"status": "200", "message": "Json imported successfully", "Structure": self.getStructure()}
+
 
 
 # Requirement

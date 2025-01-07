@@ -434,6 +434,84 @@
         }
       }
     },
+    "/api/import/json": {
+      "post": {
+        "tags": [
+          "import"
+        ],
+        "summary": "Importjson",
+        "operationId": "importJson_api_import_json_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportJsonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/import/markdown": {
+      "post": {
+        "tags": [
+          "import"
+        ],
+        "summary": "Importmarkdown",
+        "operationId": "importMarkdown_api_import_markdown_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportMarkdownRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "summary": "Root",
@@ -505,6 +583,51 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "ImportJsonRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User"
+          },
+          "projectId": {
+            "type": "string",
+            "title": "Projectid"
+          },
+          "json": {
+            "type": "object",
+            "title": "Json"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "projectId"
+        ],
+        "title": "ImportJsonRequest"
+      },
+      "ImportMarkdownRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User"
+          },
+          "projectId": {
+            "type": "string",
+            "title": "Projectid"
+          },
+          "markdown": {
+            "type": "string",
+            "title": "Markdown"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "projectId",
+          "markdown"
+        ],
+        "title": "ImportMarkdownRequest"
       },
       "ListProjectRequest": {
         "properties": {

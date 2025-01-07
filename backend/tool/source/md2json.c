@@ -29,7 +29,6 @@ void write_graph(int graph[][100], int n, FILE *fp){
             fprintf(fp, "\"%d\",", graph[i][j]);
         }
         if (graph[i][j]) fprintf(fp, "\"%d\"", graph[i][j]);
-
         if( i == n )
           fprintf(fp, "]\n");
         else

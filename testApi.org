@@ -117,6 +117,19 @@ Content-Type: application/json
 #+end_src
 
 
+*** importJson(user,projectId,jsonData)
+#+NAME: importJson
+#+begin_src http :var user="guosw" :var projectId="test" :var jsonData="id"
+  POST /api/import/json
+  Content-Type: application/json
+
+  {
+  "user": "${user}",
+  "projectId": "${projectId}",
+  "json": ${jsonData}
+  }
+#+end_src
+
 ** list
 *** list  diary
 #+CALL: ping()
@@ -210,3 +223,150 @@ Content-Type: application/json
   }
 }
 #+end_example
+
+*** Test import Json
+#+NAME: JsonData
+#+begin_example json
+ {
+  "Graph": {
+  	"1":[],
+  	"2":["3","8"],
+  	"3":["4","5","6","7"],
+  	"4":[],
+  	"5":[],
+  	"6":[],
+  	"7":[],
+  	"8":[],
+  	"9":["10","11","12","13","14"],
+  	"10":[],
+  	"11":[],
+  	"12":[],
+  	"13":[],
+  	"14":[]
+  },
+  "Node": {
+  "1": {
+  "Title": "localStorage",
+  "Content": ""
+  },
+  "2": {
+  "Title": "JavaScript localStorage 簡介",
+  "Content": "localStorage 是 Web Storage API 的一部分，允許在使用者的瀏覽器中儲存資料。與 cookies 不同，localStorage 提供更大的儲存空間，且資料不會隨每個 HTTP 請求傳送。\n"
+  },
+  "3": {
+  "Title": "基本使用方法",
+  "Content": ""
+  },
+  "4": {
+  "Title": "儲存資料",
+  "Content": "```localStorage.setItem('key', 'value')```\n"
+  },
+  "5": {
+  "Title": "取得資料",
+  "Content": "```const value = localStorage.getItem('key')```\n"
+  },
+  "6": {
+  "Title": "移除資料",
+  "Content": "```localStorage.removeItem('key')```\n"
+  },
+  "7": {
+  "Title": "清除所有資料",
+  "Content": "```localStorage.clear()```\n"
+  },
+  "8": {
+  "Title": "範例",
+  "Content": "```javascript\n// 儲存使用者名稱\nlocalStorage.setItem('username', 'JohnDoe');\n\n// 取得使用者名稱\nconst username = localStorage.getItem('username');\nconsole.log(username); // 輸出: JohnDoe\n\n// 移除使用者名稱\nlocalStorage.removeItem('username');\n\n// 清除所有 localStorage 資料\nlocalStorage.clear();\n```\n\n---"
+  },
+  "9": {
+  "Title": "示範例子",
+  "Content": ""
+  },
+  "10": {
+  "Title": "Save",
+  "Content": "```javascript=\nfunction saveData(name, information, Emoji, currentItemId) {\n// save the name and infomation\n// and the itemId\n// and update the newest itemId\nlocalStorage.setItem('globalItemId', itemId);\n\nconst data = {\nname: name,\ninformation: information,\nEmoji: Emoji,\nitemId: currentItemId,\n};\n\nlocalStorage.setItem(`data-${currentItemId}`, JSON.stringify(data));\n};\n```\n"
+  },
+  "11": {
+  "Title": "Set when On load",
+  "Content": "```javascript=\nwindow.onload = function() {\n// load the data from local storage\n// and display it on the page\nconst globalItemId = localStorage.getItem('globalItemId');\nitemId = globalItemId ? parseInt(globalItemId)+1 : 0;\nfor (let i = 0; i < itemId; i++) {\nconst data = localStorage.getItem(`data-${i}`);\nif (data) {\nconst { name, information, Emoji, itemId } = JSON.parse(data);\nLine.insertAdjacentHTML('beforeend', `\n<div id='div-${itemId}'>\n(ID is${itemId}) <span id='btn-${itemId}-Emoji'> ${Emoji}</span><span id='btn-${itemId}-name'>${name}</span>:<br>\n&nbsp;&nbsp;&nbsp;<span id='btn-${itemId}-info'>${information}</span><br><br>\n<button id='btn-${itemId}-delete'>❌</button>\n<button id='btn-${itemId}-modify'>🔄</button>\n</div>\n`);\naddRemoveButtonEvent(itemId);\naddModifyButtonEvent(itemId);\n}\n}\n};\n```\n"
+  },
+  "12": {
+  "Title": "List",
+  "Content": "```javascript=\nfunction listLocalStorageData() {\n// Iterate over all keys in localStorage\nfor (let i = 0; i < localStorage.length; i++) {\n// Get the key at the current index\nconst key = localStorage.key(i);\n// Retrieve the value associated with the key\nconst value = localStorage.getItem(key);\n// Log the key-value pair to the console\nconsole.log(`${key}: ${value}`);\n}\n}\n\n// Call the function to list all data\nlistLocalStorageData();\n```\n\n\n"
+  },
+  "13": {
+  "Title": "作業",
+  "Content": "``````\n\n\n"
+  },
+  "14": {
+  "Title": "白板",
+  "Content": "https://www.tldraw.com/r/5rRLPMxAKDyHve77uQKMp?d=v-1382.653.4600.2840.6OGm41dEfwHX5iZLAwj_Z\n\n\n\n\n\n\n\n<!-- 做一個屬於自己的介紹頁面 -->"
+  }
+  }
+  }
+#+end_example
+
+#+begin_src python :var json=JsonData
+  print((json))
+#+end_src
+
+#+RESULTS:
+: None
+
+#+CALL: importJson(user="guosw",projectId="test-import-json",jsonData=JsonData)
+
+#+RESULTS:
+#+begin_example
+{
+  "message": "Json uploaded to test-import-json",
+  "Structure": {
+    "DLtwV": [],
+    "nodeTitle": {
+      "DLtwV": "Root",
+      "vphld": "localStorage",
+      "takel": "JavaScript localStorage 簡介",
+      "zAscj": "基本使用方法",
+      "OQtLR": "儲存資料",
+            if (strlen(current_content)) strcat(current_content, "\\n");
+      "VBwgz": "取得資料",
+      "sMRpc": "移除資料",
+      "xyAJo": "清除所有資料",
+      "NxtTc": "範例",
+      "YeQmS": "示範例子",
+      "jMwmV": "Save",
+      "tVPIi": "Set when On load",
+      "DDOtr": "List",
+      "rXiSR": "作業",
+      "SLSWo": "白板"
+    },
+    "vphld": [],
+    "takel": [
+      "zAscj",
+      "NxtTc"
+    ],
+    "zAscj": [
+      "OQtLR",
+      "VBwgz",
+      "sMRpc",
+      "xyAJo"
+    ],
+    "OQtLR": [],
+    "VBwgz": [],
+    "sMRpc": [],
+    "xyAJo": [],
+    "NxtTc": [],
+    "YeQmS": [
+      "jMwmV",
+      "tVPIi",
+      "DDOtr",
+      "rXiSR",
+      "SLSWo"
+    ],
+    "jMwmV": [],
+    "tVPIi": [],
+    "DDOtr": [],
+    "rXiSR": [],
+    "SLSWo": []
+  }
+}
+#+end_example
+

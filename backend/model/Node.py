@@ -1,11 +1,11 @@
 class Node :
     def __init__ (self, create = False, data={}) :
         if create :
-            self.create(title=data["title"])
+            self.create(title=data["title"],content=data["content"] if "content" in data else None)
         else :
             self.importJson(data)
 
-    def create (self, title = "new Node") :
+    def create (self, title = "new Node", content = None) :
         from random import choice
         from string import ascii_letters
         self.ID = ''.join(choice(ascii_letters) for i in range(5))
@@ -14,6 +14,8 @@ class Node :
         self.relate_Data = Knowledges()
         self.other_Data = Knowledges()
         self.Summary = ""
+        if content is not None :
+            self.important_Data.appendKnowedge("Basic","Content" ,content)
         return
 
     def exportJson (self) :
