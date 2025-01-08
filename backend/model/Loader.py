@@ -67,6 +67,8 @@ class GraphLoader:
         self.configLoader.structureConfig[startNodeId].append(endNodeId)
         self.configLoader.writeStructureConfig()
         return self.configLoader.getStructureConfig()
+    def setStructureConfigDict(self, key, value) :
+        return self.configLoader.setStructureConfig(key, value)
     def getStructure(self) :
         return self.configLoader.getStructureConfig()
     def getNodeConfig(self) :
@@ -106,6 +108,11 @@ class ConfigLoader:
         return self.rwLoader.read("node.json")
     def nodeIdList(self) :
         return list(self.structureConfig.keys())
+    def setStructureConfig(self, key, value: dict) :
+        if key == "structure" :
+            return {"status": "404", "message": "Invalid key, structure key can ony be set by the createEdge, createNode method"}
+        self.structureConfig[key] = value
+        return {"status": "200", "message": "Config set successfully", "structureConfig": self.structureConfig}
     def getNodeConfig(self):
         return self.nodeConfig
     def getStructureConfig(self):

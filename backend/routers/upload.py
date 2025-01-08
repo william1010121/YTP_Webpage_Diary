@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from datetime import datetime
 import os
-from backend.models import UploadRequest, createNodeRequest, createEdgeRequest
+from backend.models import UploadRequest, createNodeRequest, createEdgeRequest, SetStructureConfigDictRequest
 from backend.dependencies import getJsonData, writeJsonData
 from backend.model.Loader import GraphLoader
 
@@ -51,3 +51,15 @@ async def create_edge(data: createEdgeRequest):
     structConfig = Project.createEdge(data.StartNode, data.EndNode)
     Project.close()
     return {"message": "Edge created", "structure": structConfig}
+
+@router.post("/setStructureConfig")
+async def set_structure_config_dict(data: SetStructureConfigDictRequest):
+    user_directory = f"./UserData/{data.user}"
+    if not os.path.exists(user_directory):
+        os.makedirs(user_directory)
+    if data.key != "nodePosition" :
+        return HTTPException(status_code=404, detail="Invalid key, only allowed key is 'nodePosition'")
+    Project = GraphLoader(data.projectId, user_directory)
+    Project.setStructureConfigDict(data.key, data.value)
+    Project.close()
+    return {"message": "Structure Config set"}

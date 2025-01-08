@@ -43,7 +43,11 @@ class ImportJsonRequest(BaseModel):
     user: str
     projectId: str
     json: dict
-
+class SetStructureConfigDictRequest(BaseModel):
+    user: str
+    projectId: str
+    key: str
+    value: dict
 
 class createNodeRequest(BaseModel):
    user: str

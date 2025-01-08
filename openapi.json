@@ -122,6 +122,45 @@
         }
       }
     },
+    "/api/uploads/setStructureConfig": {
+      "post": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Set Structure Config Dict",
+        "operationId": "set_structure_config_dict_api_uploads_setStructureConfig_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetStructureConfigDictRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/edit/url": {
       "post": {
         "tags": [
@@ -704,6 +743,34 @@
           "projectId"
         ],
         "title": "ProjectRequest"
+      },
+      "SetStructureConfigDictRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User"
+          },
+          "projectId": {
+            "type": "string",
+            "title": "Projectid"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "value": {
+            "type": "object",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "projectId",
+          "key",
+          "value"
+        ],
+        "title": "SetStructureConfigDictRequest"
       },
       "SummaryRequest": {
         "properties": {
