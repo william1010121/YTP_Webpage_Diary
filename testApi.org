@@ -102,7 +102,6 @@ Content-Type: application/json
 #+end_src
 
 
-
 *** getNode(user,projectId,nodeId)
 #+NAME: getNode
 #+begin_src http :var user="guosw" :var projectId="test" :var nodeId="id"
@@ -116,7 +115,6 @@ Content-Type: application/json
   }
 #+end_src
 
-
 *** importJson(user,projectId,jsonData)
 #+NAME: importJson
 #+begin_src http :var user="guosw" :var projectId="test" :var jsonData="id"
@@ -129,6 +127,20 @@ Content-Type: application/json
   "json": ${jsonData}
   }
 #+end_src
+
+*** importMarkdown(user,projectId,markdown)
+#+NAME: importMarkdown
+#+begin_src http :var user="guosw" :var projectId="test" :var markdown="id"
+  POST /api/import/markdown
+  Content-Type: application/json
+
+  {
+  "user": "${user}",
+  "projectId": "${projectId}",
+  "markdown" : "${markdown}"
+  }
+#+end_src
+
 
 ** list
 *** list  diary
@@ -219,9 +231,18 @@ Content-Type: application/json
 #+CALL: getNode(user="guosw",projectId="test-upload-url",nodeId="UwzGz")
 
 #+RESULTS:
-: {
-:   "detail": "Node not found"
-: }
+#+begin_example
+{
+  "node": {
+    "ID": "UwzGz",
+    "title": "Root",
+    "important_Data": [],
+    "relate_Data": [],
+    "other_Data": [],
+    "Summary": ""
+  }
+}
+#+end_example
 
 *** Test import Json
 #+NAME: JsonData
@@ -313,59 +334,103 @@ Content-Type: application/json
 
 #+CALL: importJson(user="guosw",projectId="test-import-json",jsonData=JsonData)
 
-#+RESULTS:
-#+begin_example
-{
-  "message": "Json uploaded to test-import-json",
-  "Structure": {
-    "DLtwV": [],
-    "nodeTitle": {
-      "DLtwV": "Root",
-      "vphld": "localStorage",
-      "takel": "JavaScript localStorage 簡介",
-      "zAscj": "基本使用方法",
-      "OQtLR": "儲存資料",
-            if (strlen(current_content)) strcat(current_content, "\\n");
-      "VBwgz": "取得資料",
-      "sMRpc": "移除資料",
-      "xyAJo": "清除所有資料",
-      "NxtTc": "範例",
-      "YeQmS": "示範例子",
-      "jMwmV": "Save",
-      "tVPIi": "Set when On load",
-      "DDOtr": "List",
-      "rXiSR": "作業",
-      "SLSWo": "白板"
-    },
-    "vphld": [],
-    "takel": [
-      "zAscj",
-      "NxtTc"
-    ],
-    "zAscj": [
-      "OQtLR",
-      "VBwgz",
-      "sMRpc",
-      "xyAJo"
-    ],
-    "OQtLR": [],
-    "VBwgz": [],
-    "sMRpc": [],
-    "xyAJo": [],
-    "NxtTc": [],
-    "YeQmS": [
-      "jMwmV",
-      "tVPIi",
-      "DDOtr",
-      "rXiSR",
-      "SLSWo"
-    ],
-    "jMwmV": [],
-    "tVPIi": [],
-    "DDOtr": [],
-    "rXiSR": [],
-    "SLSWo": []
-  }
-}
+*** Test import markdown
+#+NAME: MarkdownData
+#+begin_example md
+# 想法
+有一個地方是可以讓你自動上傳每天的瀏覽記錄的，可能跟加上一個跟收藏一樣的按鈕，然後按了之後就當他讀進去了，然後可能每天晚上的時候就透過AI自動整理內容，然後每天一起床就會有昨天學的東東
+
+
+## 實作
+
+1. 有一個後端server提供`api`
+    - `/api/{user}/upload/{type}`
+        - 目前只打算先做`type: url`
+    - `/api/{user}/index/{date}`
+        - 獲取某一天的`list`
+2. 一個網頁可以看到
+    - 每天的網址列表
+    - 每天結束之後的
+        - 每個網址的小總結
+        - 一整天下來的總結
+3. 一個`chrome plugin`
+    - 負責自動的加入網址
+    - 透過合後端的`api`互動來幫`user`加入資料
+
+## 有關`chrome plugin`
+
+因為我發現我在找資料的時候，最後真的有價值的都是在某些特定的網站上面
+ex:
+1. `stackoverflow`
+2. `reddit`
+3. `hackmd`
+
+所以`google plugin`可以有兩種方式
+1. 使用者呼叫`google plugin`並且手動的將網址加入
+2. 可以再進入到某一個網站的時候就讓`google plugin`自動將這個網頁加入（或著可能進入到這個網頁的時候就彈出確認窗(按y就儲存n就不儲存)
+
+
+
+# QA
+
+
+1. 每次發想前可以先想想一些問題目標使用者? 市面上有做過類似的? 有的話你的商品優勢會在哪裡? 沒有的話，功能可行性分析...等等。
+
+`Ans:`
+`目標使用者`: 每天會透過瀏覽器搜尋大量資訊的人(ex:程序員)
+`類似的`: 
+ - 目前沒有找到，有單個網頁的`AI summarize`，但沒有找到有上述功能的
+ - 如果是`save to notion`的話，我們的優勢可能在於
+     1. 可以自動的將特定的網網站自動加入
+     2. 如果是透過提供`api`的方式的話，那麼只要有人寫了相關的插件，就可以直接調用
+
+
+---
+
+
+2. 聽起來類似於筆記整理並自動分類，並產出可以重複複習回顧的紀錄檔案，我目前想的問題是，瀏覽紀錄應該只侷限網頁的話，想問線上的pdf、影像、影像會有加入整理的需求範圍? 每日的瀏覽紀錄並不一定是使用者想進行分析的，那會如何選擇(是否能自動化?)?  AI整理結果要怎樣符合使用者所想要的或是可以供客製? 瀏覽紀錄的隱私問題...這應該是每個用大語言模型會被問到的...
+
+`Ans`:
+1. 如果`抓url`的功能實現的話，線上的`pdf`, `影像`應該就只是在後端增加對應的`api`
+2. 選擇的部分就是會有
+    - 遇到特定網站的時候自動加入
+    - 使用者可以透過快捷鍵(ex: ctrl-alt-s) 快速加入
+3. `AI` 的整理結果客製化
+    - 可能可以讓使用者自定義prompt
+    - 可能可以混合`戰地記者與閃光彈`他們這組的檔案分類，在接收到網址之後可以先自動分類，或著讓使用者育先建立好他們想要的分類(ex: 經濟學, 程式, ....)，然後`AI`
+
+---
+
+
+3. 分享之前的經驗，使用Save to Notion外掛，可接將網頁資料選取後儲存於notion，並加上chatGPT分析做資料處理，但這邊就是使用者自主圈選內容並非自動化整理，供參考。
+
+最後...如果是簡單的摘要，文章整理模型應該有機會可以地端執行，效能也高，就能避開上傳到server的隱私問題，成本就是硬體設備還有你們評估他產出內容的結果。
+
+
+
+---
+
+# 目前找解決資料的時候會遇到的問題
+
+- 搜到解答之後下次遇到同樣的問題就忘記了
+    - 同樣的問題卻需要搜尋了很多次
+
+- 搜尋到一半的時候會忘記自己原本的問題
+
+- 應該要有兩個prompt
+    - 總結
+    - 生成教學
+---
+
+# 一些發想
+
+- 對於某個領域的資訊
+    - 可能可以將目前的連結跟檔案都搜集起來，交給AI來先總結出結果
+        1. 直接使用Google 的 Notebook LLM
+
 #+end_example
 
+
+#+CALL: importMarkdown(user="guosw", projectId="test-import-markdown",markdown=MarkdownData)
+
+#+RESULTS:

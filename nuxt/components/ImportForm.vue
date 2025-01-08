@@ -5,11 +5,16 @@
             <v-card-title>{{ title }}</v-card-title>
             <v-card-text>
                 <v-text-field v-model="form.projectId" label="Project ID" />
-                <v-file-input v-model="form.file" label="File" accept=".json,.md" />
+                <v-select
+                    :items="['file', 'text']"
+                    v-model="form.type"
+                />
+                <v-file-input v-if="form.type=='file'" v-model="form.file" label="File" accept=".json,.md" />
+                <v-textarea v-if="form.type=='text'" v-model="form.text" label="Text" />
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="green" @click="importfile(form)">Submit</v-btn>
+                <v-btn color="green" @click="(form.type=='file' ? importfile(form) : importtext(form))">Import</v-btn>
                 <v-btn color="red darken-1" text @click="close">Cancel</v-btn>
             </v-card-actions>
         </v-card>
@@ -31,7 +36,8 @@ const props = defineProps({
     required: true,
   },
 });
-const emit = defineEmits(['importfile', 'close']);
+const emit = defineEmits(['importfile', 'close', 'importtext']);
 const close = () => emit('close');
 const importfile = (form) => emit('importfile', form);
+const importtext = (form) => emit('importtext', form);
 </script>

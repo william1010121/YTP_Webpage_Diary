@@ -31,7 +31,8 @@
         title="Import Json"
         :form="jsonForm"
         :showForm="showJsonForm"
-        @importfile="importJson(jsonForm)"
+        @importfile="importJsonFile(jsonForm)"
+        @importtext="importJsonText(jsonForm)"
         @close="() => { showJsonForm = false }"
     />
     <ImportForm
@@ -39,7 +40,8 @@
         title="Import Markdown"
         :form="markdownForm"
         :showForm="showMarkdownForm"
-        @importfile="importMarkdown(markdownForm)"
+        @importfile="importMarkdownFile(markdownForm)"
+        @importtext="importMarkdownText(markdownForm)"
         @close="() => { showMarkdownForm = false }"
     />
 
@@ -64,11 +66,13 @@ const showMarkdownForm = ref(false);
 const jsonForm = ref({
     projectId: '',
     file: null,
+    type: 'file',
 });
 
 const markdownForm = ref({
     projectId: '',
     file: null,
+    type: 'file',
 });
 const fetchProjectList = async () => {
     try {
@@ -80,47 +84,62 @@ const fetchProjectList = async () => {
     }
 };
 
-const importJson = async (form) => {
-    console.log(form);
-    const file = form.file;
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-        try {
-            const { $axios } = useNuxtApp();
-            const response = await $axios.post('/api/import/json', {
-                user,
-                projectId: form.projectId,
-                json: JSON.parse(e.target.result),
-            });
-            showJsonForm.value = false;
-            fetchProjectList();
-        } catch (error) {
-            console.error('Error importing json:', error);
-        }
-    };
-    reader.readAsText(file);
+const importJson = async (projectId,Json) => {
+    try {
+        const { $axios } = useNuxtApp();
+        const response = await $axios.post('/api/import/json', {
+            user,
+            projectId: projectId,
+            json: Json,
+        });
+        fetchProjectList();
+        showJsonForm.value = false;
+    } catch (error) {
+        console.error('Error importing json:', error);
+    }
 };
 
-const importMarkdown = async (form) => {
+
+const importMarkdown = async (projectId, Makrdown)=> {
+    try {
+        const { $axios } = useNuxtApp();
+        const response = await $axios.post('/api/import/markdown', {
+            user,
+            projectId: projectId,
+            markdown: Makrdown,
+        });
+        fetchProjectList();
+        showMarkdownForm.value = false;
+    } catch (error) {
+        console.error('Error importing markdown:', error);
+    }
+};
+
+const importJsonFile = async (form) => {
     console.log(form);
     const file = form.file;
     const reader = new FileReader();
     reader.onload = async (e) => {
-        try {
-            const { $axios } = useNuxtApp();
-            const response = await $axios.post('/api/import/markdown', {
-                user,
-                projectId: form.projectId,
-                markdown: e.target.result,
-            });
-            fetchProjectList();
-            showMarkdownForm.value = false;
-        } catch (error) {
-            console.error('Error importing markdown:', error);
-        }
+        importJson(form.projectId, JSON.parse(e.target.result));
     };
     reader.readAsText(file);
 };
+const importMarkdownFile = async (form) => {
+    console.log(form);
+    const file = form.file;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        importMarkdown(form.projectId, e.target.result);
+    };
+    reader.readAsText(file);
+}; 
+const importJsonText = async (form) => {
+    importJson(form.projectId, JSON.parse(form.text));
+};
+const importMarkdownText = async (form) => {
+    importMarkdown(form.projectId, form.text);
+};
+
 
 
 
