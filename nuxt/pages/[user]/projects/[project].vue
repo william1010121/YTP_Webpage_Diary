@@ -77,6 +77,12 @@
                         <button title="save graph" @click="saveNodePosition">
                             <Icon name="save" />
                         </button>
+                        <button title="layout graph" @click="layoutGraph('TB')">
+                            <Icon name="layout TB" />
+                        </button>
+                        <button title="layout graph" @click="layoutGraph('LR')">
+                            <Icon name="layout LR" />
+                        </button>
                     </div>
                 </Panel>
 
@@ -241,6 +247,7 @@ const parseMarkdown = (content) => {
     return marked(content);
 }
 onNodeDoubleClick((event) => {
+    console.log(toObject())
     getAndShowNodeInformation(event.node.id);
 })
 
@@ -249,6 +256,21 @@ onNodeDoubleClick((event) => {
 import { createVCodeBlock, VCodeBlock } from '@wdns/vue-code-block';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-typescript';
+
+
+
+
+import {useLayout}  from '~/utils/useLayout'
+const { layout } = useLayout()
+const { fitView } = useVueFlow()
+async function layoutGraph(direction) {
+    nodes.value = layout(nodes.value, edges.value, direction)
+
+    nextTick(() => {
+        fitView()
+    })
+}
+
 </script>
 
 <style>
