@@ -1,4 +1,5 @@
 <template>
+    {{ nodeData}}
     <v-row>
         <v-col cols="12">
             <v-toolbar flat>
@@ -8,18 +9,56 @@
             </v-toolbar>
         </v-col>
     </v-row>
-    <v-dialog v-model="showStruectureJson" >
+    <v-dialog v-model="showStruectureJson">
         <v-card>
             <v-card-title>
                 <span class="text-h5">Json Structure</span>
             </v-card-title>
             <v-card-text>
-            <pre>{{ JSON.stringify(data, null, 2) }}</pre>
+                <VCodeBlock
+                    :code="JSON.stringify(data, null, 2)"
+                    language="json"
+                    prismjs="" />
             </v-card-text>
             <v-card-actions>
-            <v-btn color="red darken-1" text @click="showStruectureJson= false">
-                Close
-            </v-btn>
+                <v-btn color="red darken-1" text @click="showStruectureJson= false">
+                    Close
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="showNodeInformation">
+        <v-card>
+            <v-card-title>{{nodeData.node.title}}</v-card-title>
+            <v-card-text>
+                <div class="markdown"
+                    v-html="(nodeData.node.Summary ? parseMarkdown(nodeData.node.Summary) :  nodeData.node.important_Data[0] ? parseMarkdown(nodeData.node.important_Data[0]['content']) : '' )">
+                </div>
+
+                <hr>
+                <details>
+                    <summary>More Information</summary>
+                    <h2>Important Data</h2>
+                    <VCodeBlock
+                        :code="JSON.stringify(nodeData.node.important_Data, null, 2)"
+                        language="json"
+                        prismjs="" />
+                    <h2>Relate Data</h2>
+                    <VCodeBlock
+                        :code="JSON.stringify(nodeData.node.relate_Data, null, 2)"
+                        language="json"
+                        prismjs="" />
+                    <h2>Important Data</h2>
+                    <VCodeBlock
+                        :code="JSON.stringify(nodeData.node.other_Data, null, 2)"
+                        language="json"
+                        prismjs="" />
+                </details>
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="red darken-1" text @click="showNodeInformation = false">Close</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -53,6 +92,7 @@ const user = route.params.user;
 const project = route.params.project;
 const data = ref({});
 const showStruectureJson = ref(false);
+const showNodeInformation = ref(false);
 
 
 const fetchStructure = async () => {
@@ -77,7 +117,7 @@ import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 import { VueFlow, useVueFlow, Panel } from '@vue-flow/core'
 
-const { onConnect, addEdges, toObject } = useVueFlow()
+const { onConnect, addEdges, toObject, onNodeDoubleClick } = useVueFlow()
 
 const nodes = ref([
     { id: '1', type: 'input', label: 'Node 1', position: { x: 250, y: 5 } },
@@ -180,15 +220,56 @@ onConnect((params) => {
     saveNodePosition()
 })
 
+const nodeData = ref({});
+const getNodeInformation = async (nodeId) => {
+    try {
+        const { $axios } = useNuxtApp();
+        const response = await $axios.post('/api/get_node', { user, projectId: project, nodeId });
+        nodeData.value = response.data || {};
+    } catch (error) {
+        console.error('Error fetching node information:', error);
+    }
+}
+const getAndShowNodeInformation = async (nodeId) => {
+    await getNodeInformation(nodeId);
+    showNodeInformation.value = true;
+}
 
+
+import { marked } from 'marked';
+const parseMarkdown = (content) => {
+    return marked(content);
+}
+onNodeDoubleClick((event) => {
+    getAndShowNodeInformation(event.node.id);
+})
+
+
+
+import { createVCodeBlock, VCodeBlock } from '@wdns/vue-code-block';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-typescript';
 </script>
 
 <style>
 /* import the necessary styles for Vue Flow to work */
 @import '@vue-flow/core/dist/style.css';
-
 /* import the default theme, this is optional but generally recommended */
 @import '@vue-flow/core/dist/theme-default.css';
 @import '@vue-flow/controls/dist/style.css';
 @import '@vue-flow/minimap/dist/style.css';
+.markdown {
+  margin: 20px;
+  overflow: visible;
+  white-space: normal;
+  background-color: #FAFAFA;
+  border-radius: 0.5cm !important;
+}
+code[class*="language-"],
+code[class*="language-"] *,
+pre[class*="language-"]
+{
+  white-space: pre-wrap;
+  word-wrap: break-word; 
+}
 </style>

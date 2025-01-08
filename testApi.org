@@ -153,6 +153,14 @@ Content-Type: application/json
 
 *** get node config
 #+CALL: getNodeConfig(user="guosw",projectId="test")
+
+#+RESULTS:
+: {
+:   "nodeconfig": {
+:     "K": 200
+:   }
+: }
+
 *** Test New Node
 #+CALL: createNode(user="guosw",projectId="test-graph",nodeTitle="Test")
 
@@ -201,28 +209,19 @@ Content-Type: application/json
 #+RESULTS:
 : {
 :   "structure": {
-:     "UGHdi": [],
+:     "UwzGz": [],
 :     "nodeTitle": {
-:       "UGHdi": "Root"
+:       "UwzGz": "Root"
 :     }
 :   }
 : }
 
-#+CALL: getNode(user="guosw",projectId="test-upload-url",nodeId="UGHdi")
+#+CALL: getNode(user="guosw",projectId="test-upload-url",nodeId="UwzGz")
 
 #+RESULTS:
-#+begin_example
-{
-  "node": {
-    "ID": "UGHdi",
-    "title": "Root",
-    "important_Data": [],
-    "relate_Data": [],
-    "other_Data": [],
-    "Summary": ""
-  }
-}
-#+end_example
+: {
+:   "detail": "Node not found"
+: }
 
 *** Test import Json
 #+NAME: JsonData
