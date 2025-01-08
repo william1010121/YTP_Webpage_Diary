@@ -20,7 +20,7 @@
         >
             <v-list-item-title
                 class="project"
-                @click="() => $router.push(`${user}/projects/${project}`)"
+                @click="() => $router.push(`/${user}/projects/${project}`)"
             >{{ project }}</v-list-item-title>
         </v-list-item>
     </v-list>
