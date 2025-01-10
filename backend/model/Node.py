@@ -30,6 +30,9 @@ class Node :
     def importJson (self, data) :
         self.ID = data["ID"]
         self.title = data["title"]
+        self.important_Data = Knowledges()
+        self.relate_Data = Knowledges()
+        self.other_Data = Knowledges()
         self.important_Data.knowledges = data["important_Data"]
         self.relate_Data.knowledges = data["relate_Data"]
         self.other_Data.knowledges = data["other_Data"]
