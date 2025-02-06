@@ -9,4 +9,5 @@ import { mdiContentSave, mdiRestore, mdiPlus, mdiArrowLeftRightBold, mdiArrowUpD
     <v-icon :icon="mdiPlus" v-if="name==='add'"></v-icon>
     <v-icon :icon="mdiArrowLeftRightBold" v-if="name==='layout LR'"></v-icon>
     <v-icon :icon="mdiArrowUpDownBold" v-if="name==='layout TB'"></v-icon>
+    <v-icon :icon="mdiEyeOutline" v-if="name==='show all'"></v-icon>
 </template>
