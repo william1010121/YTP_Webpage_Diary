@@ -161,6 +161,45 @@
         }
       }
     },
+    "/api/uploads/add_project_tags": {
+      "post": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Add Project Tags",
+        "operationId": "add_project_tags_api_uploads_add_project_tags_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProjectTagsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/edit/url": {
       "post": {
         "tags": [
@@ -246,6 +285,45 @@
         ],
         "summary": "Getprojectlist",
         "operationId": "getProjectList_api_get_project_list_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListProjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_project_tags": {
+      "post": {
+        "tags": [
+          "list"
+        ],
+        "summary": "Getprojecttags",
+        "operationId": "getProjectTags_api_get_project_tags_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -570,6 +648,32 @@
   },
   "components": {
     "schemas": {
+      "AddProjectTagsRequest": {
+        "properties": {
+          "user": {
+            "type": "string",
+            "title": "User"
+          },
+          "projectId": {
+            "type": "string",
+            "title": "Projectid"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "projectId",
+          "tags"
+        ],
+        "title": "AddProjectTagsRequest"
+      },
       "EditRequest": {
         "properties": {
           "user": {

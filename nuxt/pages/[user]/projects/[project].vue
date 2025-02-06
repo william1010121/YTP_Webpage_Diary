@@ -15,10 +15,7 @@
                 <span class="text-h5">Json Structure</span>
             </v-card-title>
             <v-card-text>
-                <VCodeBlock
-                    :code="JSON.stringify(data, null, 2)"
-                    language="json"
-                    prismjs="" />
+                <VCodeBlock :code="JSON.stringify(data, null, 2)" language="json" prismjs="" />
             </v-card-text>
             <v-card-actions>
                 <v-btn color="red darken-1" text @click="showStruectureJson= false">
@@ -32,28 +29,19 @@
         <v-card>
             <v-card-title>{{nodeData.node.title}}</v-card-title>
             <v-card-text>
-                <div class="markdown"
-                    v-html="(nodeData.node.Summary ? parseMarkdown(nodeData.node.Summary) :  nodeData.node.important_Data[0] ? parseMarkdown(nodeData.node.important_Data[0]['content']) : '' )">
+                <div class="markdown">
+                    <MdPreview :id="id" :modelValue="giveContent()" theme="dark" preview-theme="github" />
                 </div>
-
                 <hr>
                 <details>
                     <summary>More Information</summary>
                     <h2>Important Data</h2>
-                    <VCodeBlock
-                        :code="JSON.stringify(nodeData.node.important_Data, null, 2)"
-                        language="json"
+                    <VCodeBlock :code="JSON.stringify(nodeData.node.important_Data, null, 2)" language="json"
                         prismjs="" />
                     <h2>Relate Data</h2>
-                    <VCodeBlock
-                        :code="JSON.stringify(nodeData.node.relate_Data, null, 2)"
-                        language="json"
-                        prismjs="" />
+                    <VCodeBlock :code="JSON.stringify(nodeData.node.relate_Data, null, 2)" language="json" prismjs="" />
                     <h2>Important Data</h2>
-                    <VCodeBlock
-                        :code="JSON.stringify(nodeData.node.other_Data, null, 2)"
-                        language="json"
-                        prismjs="" />
+                    <VCodeBlock :code="JSON.stringify(nodeData.node.other_Data, null, 2)" language="json" prismjs="" />
                 </details>
             </v-card-text>
             <v-card-actions>
@@ -112,8 +100,9 @@ const fetchStructure = async () => {
     }
 };
 
-onMounted(() => {
-    fetchStructure();
+onMounted(async () => {
+    await fetchStructure();
+    await layoutGraph('TB');
 });
 
 
@@ -123,7 +112,8 @@ import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 import { VueFlow, useVueFlow, Panel } from '@vue-flow/core'
 
-const { onConnect, addEdges, toObject, onNodeDoubleClick } = useVueFlow()
+const { onConnect, addEdges, toObject, onNodeDoubleClick, onPaneReady } = useVueFlow()
+
 
 const nodes = ref([
     { id: '1', type: 'input', label: 'Node 1', position: { x: 250, y: 5 } },
@@ -242,16 +232,25 @@ const getAndShowNodeInformation = async (nodeId) => {
 }
 
 
-import { marked } from 'marked';
-const parseMarkdown = (content) => {
-    return marked(content);
-}
 onNodeDoubleClick((event) => {
     console.log(toObject())
     getAndShowNodeInformation(event.node.id);
 })
 
+//https://github.com/imzbf/md-editor-v3 
+import { MdPreview, MdCatalog } from 'md-editor-v3';
+import 'md-editor-v3/lib/preview.css';
 
+const id = 'preview-only';
+
+
+const unescape = (content) => {
+    return content.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\\\/g, '\\');
+}
+const giveContent = () => {
+    console.log(unescape(nodeData.value.node.Summary ? nodeData.value.node.Summary : nodeData.value.node.important_Data[0] ? nodeData.value.node.important_Data[0]['content'] : ''));
+    return unescape(nodeData.value.node.Summary ? nodeData.value.node.Summary : nodeData.value.node.important_Data[0] ? nodeData.value.node.important_Data[0]['content'] : '');
+};
 
 import { createVCodeBlock, VCodeBlock } from '@wdns/vue-code-block';
 import Prism from 'prismjs';

@@ -20,6 +20,12 @@ class Structure(BaseModel) :
 # Define request body schemas
 class ListProjectRequest(BaseModel):
     user: str
+class AddProjectTagsRequest(BaseModel):
+    user: str
+    projectId: str
+    tags: list[str]
+
+
 class ProjectRequest(BaseModel) :
     user: str
     projectId: str

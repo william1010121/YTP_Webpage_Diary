@@ -18,6 +18,8 @@ class ReadWriteLoader:
         with open(os.path.join(self.dirPath,file), 'w') as f:
             json.dump(data, f)
         return
+    def list(self):
+        return os.listdir(self.dirPath)
 # Requirement: project Id and the root Dir
 # Parent of : Nodeloader, configLoader
 # should also read the config file and the node file
@@ -141,5 +143,33 @@ class NodeLoader:
     def writeNodes(self, nodeList: list[Node]) :
         for node in nodeList:
             self.writeNode(node.ID, node)
+        return
+
+
+class NodePool :
+    def __init__(self, NodePoolDictionary) :
+        self.rwLoader = ReadWriteLoader(NodePoolDictionary)
+        return
+    def nodeList(self) :
+        return self.rwLoader.list()
+    def getNode(self, NodeID) :
+        return Node(False,self.rwLoader.read(NodeID))
+    def updateNode(self, NodeID, json) :
+        return self.rwLoader.write(NodeID, json)
+
+class ProjectPool :
+    def __init__(self, ProjectPoolDictionary) :
+        self.rwLoader = ReadWriteLoader(ProjectPoolDictionary)
+        if not self.rwLoader.exists("Tags.json") :
+            self.rwLoader.write("Tags.json",{})
+        return
+    def projectList(self) -> list[str] :
+        return list(filter(lambda x: x != "Tags.json", self.rwLoader.list()))
+    def getProjectTags(self) :
+        return self.rwLoader.read("Tags.json")
+    def addTags(self, ProjectID, tags: list[str]) :
+        projectTags = self.getProjectTags()
+        projectTags.setdefault(ProjectID,[]).extend(tags)
+        self.rwLoader.write("Tags.json", projectTags)
         return
 

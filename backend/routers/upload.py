@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from datetime import datetime
 import os
-from backend.models import UploadRequest, createNodeRequest, createEdgeRequest, SetStructureConfigDictRequest
+from backend.models import UploadRequest, createNodeRequest, createEdgeRequest, SetStructureConfigDictRequest, AddProjectTagsRequest
 from backend.dependencies import getJsonData, writeJsonData
 from backend.model.Loader import GraphLoader
+from backend.model.Loader import ProjectPool
 
 router = APIRouter()
 
@@ -63,3 +64,13 @@ async def set_structure_config_dict(data: SetStructureConfigDictRequest):
     Project.setStructureConfigDict(data.key, data.value)
     Project.close()
     return {"message": "Structure Config set"}
+
+@router.post("/add_project_tags")
+async def add_project_tags(data: AddProjectTagsRequest):
+    project_directory = f"./UserData/{data.user}/Project"
+    print("DataPoject Id, tags: ", data.projectId, data.tags)
+    if not os.path.exists(project_directory):
+        os.makedirs(project_directory)
+    projectPool = ProjectPool(project_directory)
+    projectPool.addTags(data.projectId, data.tags)
+    return {"message": "Project Tags added", "tags": projectPool.getProjectTags()}

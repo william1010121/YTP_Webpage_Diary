@@ -101,7 +101,6 @@ Content-Type: application/json
   }
 #+end_src
 
-
 *** getNode(user,projectId,nodeId)
 #+NAME: getNode
 #+begin_src http :var user="guosw" :var projectId="test" :var nodeId="id"
@@ -141,6 +140,29 @@ Content-Type: application/json
   }
 #+end_src
 
+*** getProjectTags(user)
+#+NAME: getProjectTags
+#+begin_src http :var user="guosw"
+  POST /api/get_project_tags
+  Content-Type: application/json
+
+  {
+  "user": "${user}"
+  }
+#+end_src
+
+*** addProjectTags(user,projectId,tags)
+#+NAME: addProjectTags
+#+begin_src http :var user="guosw" :var projectId="f" :var tags="[test]"
+  POST /api/uploads/add_project_tags
+  Content-Type: application/json
+
+  {
+  "user": "${user}",
+  "projectId": "${projectId}",
+  "tags": ${tags}
+  }
+#+end_src
 
 ** list
 *** list  diary
@@ -161,7 +183,6 @@ Content-Type: application/json
 
 *** get project structure
 #+CALL: getProjectStructure(user="guosw",projectId="test")
-
 
 *** get node config
 #+CALL: getNodeConfig(user="guosw",projectId="test")
@@ -434,3 +455,56 @@ ex:
 #+CALL: importMarkdown(user="guosw", projectId="test-import-markdown",markdown=MarkdownData)
 
 #+RESULTS:
+
+
+#+CALL: getProjectList(user="guosw")
+
+#+RESULTS:
+#+begin_example
+{
+  "project-length": 7,
+  "projects": [
+    "test-digital-system-1",
+    "test-markdown-file",
+    "test-markdown-file-2",
+    "gemini-digital-system",
+    "segment-tree",
+    "pandoc-markdown",
+    "digital-system-2"
+  ]
+}
+#+end_example
+
+#+CALL: getProjectTags(user="guosw")
+
+#+RESULTS:
+: {
+:   "project-tags": {}
+: }
+
+#+NAME: TagLists
+#+begin_example json
+["test"]
+#+end_example
+
+#+CALL: addProjectTags(user="guosw",projectId="test",tags=TagLists)
+
+#+RESULTS:
+#+begin_example
+{
+  "detail": [
+    {
+      "type": "json_invalid",
+      "loc": [
+        "body",
+        48
+      ],
+      "msg": "JSON decode error",
+      "input": {},
+      "ctx": {
+        "error": "Expecting ',' delimiter"
+      }
+    }
+  ]
+}
+#+end_example

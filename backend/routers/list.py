@@ -4,6 +4,7 @@ import os
 from backend.models import ListRequest, ProjectRequest, ListProjectRequest, ProjectNodeRequest
 from backend.dependencies import getJsonData
 from backend.model.Loader import GraphLoader
+from backend.model.Loader import NodePool, ProjectPool
 
 router = APIRouter()
 
@@ -27,15 +28,20 @@ async def list_files(data: ListRequest):
 
 @router.post("/get_project_list")
 async def getProjectList(listProject: ListProjectRequest):
-    user_directory = f"./UserData/{listProject.user}/Project"
-    if not os.path.exists(user_directory):
-        os.makedirs(user_directory)
-    project_list = []
-    for project in os.listdir(user_directory):
-        if not os.path.isdir(os.path.join(user_directory, project)):
-            continue
-        project_list.append(project)
+    project_directory = f"./UserData/{listProject.user}/Project"
+    if not os.path.exists(project_directory):
+        os.makedirs(project_directory)
+    projectPool = ProjectPool(project_directory)
+    project_list = projectPool.projectList()
     return {"project-length": len(project_list), "projects": project_list}
+
+@router.post("/get_project_tags")
+async def getProjectTags(getProjectTags: ListProjectRequest):
+    project_directory = f"./UserData/{getProjectTags.user}/Project"
+    if not os.path.exists(project_directory):
+        os.makedirs(project_directory)
+    projectPool = ProjectPool(project_directory)
+    return {"project-tags": projectPool.getProjectTags()}
 
 @router.post("/get_structure")
 async def getProjectStructure(project: ProjectRequest):
