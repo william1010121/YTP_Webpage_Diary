@@ -1,6 +1,6 @@
 <script setup>
 defineProps(['name'])
-import { mdiContentSave, mdiRestore, mdiPlus, mdiArrowLeftRightBold, mdiArrowUpDownBold } from '@mdi/js'
+import { mdiContentSave, mdiRestore, mdiPlus, mdiArrowLeftRightBold, mdiArrowUpDownBold, mdiEyeOutline } from '@mdi/js'
 </script>
 
 <template>
