@@ -1,11 +1,10 @@
 <template>
-    {{ showNodeInformation }}
     <v-row no-gutters>
-        <v-col cols="3">
+        <v-col cols="3" v-if="!isRootNodeIdMode">
             <GraphSidePanel :data="data" :nodes="nodes" :edges="edges" @select-node="handleSelectNode" />
         </v-col>
-        <v-col cols="9">
-            <v-row>
+        <v-col cols="isRootNodeIdMode.value ? 9 : 12">
+            <v-row v-if="!isRootNodeIdMode">
                 <v-col cols="12">
                     <v-toolbar flat>
                         <v-toolbar-title>User: {{ user }}</v-toolbar-title>
@@ -27,20 +26,20 @@
                         :default-zoom="1.5" :min-zoom="0.2" :max-zoom="4" @node-double-click="handleNodeDoubleClick"
                         @connect="handleConnect">
                         <Background pattern-color="#aaa" :gap="8" />
-                        <MiniMap />
-                        <Controls />
+                        <MiniMap v-if="!isRootNodeIdMode" />
+                        <Controls v-if="!isRootNodeIdMode" />
                         <Panel position="top-right">
                             <div class="buttons">
-                                <button title="save graph" @click="onSaveNodePosition">
+                                <button title="save graph" @click="onSaveNodePosition" v-if="!isRootNodeIdMode">
                                     <Icon name="save" />
                                 </button>
-                                <button title="layout graph TB" @click="onLayoutGraph('TB')">
+                                <button title="layout graph TB" @click="onLayoutGraph('TB')" v-if="!isRootNodeIdMode">
                                     <Icon name="layout TB" />
                                 </button>
-                                <button title="layout graph LR" @click="onLayoutGraph('LR')">
+                                <button title="layout graph LR" @click="onLayoutGraph('LR')" v-if="!isRootNodeIdMode">
                                     <Icon name="layout LR" />
                                 </button>
-                                <button title="show all graph" @click="onShowFullGraph">
+                                <button title="show all graph" @click="onShowFullGraph" v-if="!isRootNodeIdMode">
                                     <Icon name="show all" />
                                 </button>
                             </div>
@@ -76,6 +75,8 @@ import { useNodeContent } from './composables/useNodeContent';
 const route = useRoute();
 const user = route.params.user;
 const project = route.params.project;
+const rootNodeId = route.query.rootNodeId;
+const isRootNodeIdMode = ref(!!rootNodeId);
 
 // --- Dialog Visibility ---
 const showStruectureJson = ref(false);
@@ -97,6 +98,14 @@ const { data, fetchStructure, makeNodes, makeEdges } = useGraphData(user, projec
 onMounted(async () => {
     await fetchStructure();
     await onLayoutGraph('TB');
+    console.log('Root Node Id Mode:', isRootNodeIdMode.value);
+    console.log('Root Node Id:', rootNodeId);
+    console.log('Data:', data.value);
+    if (isRootNodeIdMode.value) {
+        if( !data.value?.structure) return;
+        if( !data.value.structure.hasOwnProperty(rootNodeId)) return;
+        handleSelectNode(rootNodeId);
+    }
 });
 
 

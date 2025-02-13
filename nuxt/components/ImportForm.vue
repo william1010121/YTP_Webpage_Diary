@@ -1,6 +1,6 @@
 <!-- components/ImportForm.vue -->
 <template>
-    <v-dialog :model-value="showForm">
+    <v-dialog :modelValue="show">
         <v-card>
             <v-card-title>{{ title }}</v-card-title>
             <v-card-text>
@@ -31,9 +31,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  showForm: {
+  show: {
     type: Boolean,
-    required: true,
+    required: false,
+    default: true,
   },
 });
 const emit = defineEmits(['importfile', 'close', 'importtext']);

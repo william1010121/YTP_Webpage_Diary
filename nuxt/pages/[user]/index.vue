@@ -1,4 +1,3 @@
-
 <template>
     <v-app>
         <v-main>
@@ -36,8 +35,6 @@
                             </v-card-text>
                         </v-card>
 
-                        <ImportForm />
-
                         <v-card class="mt-4" elevation="1">
                             <v-card-title>Debug Data</v-card-title>
                             <v-card-text class="pa-4">
@@ -46,11 +43,28 @@
                                     <pre>{{ data }}</pre>
                                     <pre>showImportForm: {{ showImportForm }}</pre>
                                     <pre>importForm: {{ importForm }}</pre>
+                                    <pre>importType: {{ importType }}</pre>
                                 </details>
                             </v-card-text>
                         </v-card>
                     </v-col>
                 </v-row>
+                <ImportForm
+                    v-if="showImportForm && importType === 'json'"
+                    :title="importFormTitle"
+                    :form="importForm"
+                    @importfile="importFile(importForm)"
+                    @importtext="importText(importForm)"
+                    @close="() => { showImportForm = false }"
+                />
+                <ImportForm
+                    v-if="showImportForm && importType === 'markdown'"
+                    :title="importFormTitle"
+                    :form="importForm"
+                    @importfile="importFile(importForm)"
+                    @importtext="importText(importForm)"
+                    @close="() => { showImportForm = false }"
+                />
             </v-container>
         </v-main>
     </v-app>
