@@ -103,15 +103,35 @@ int main() {
     std::vector<Node> nodes;
     std::string line;
     std::string currentContent;  // Accumulate content lines for the current node
+    bool in_code_block = false;  // Flag to track if we are inside a fenced code block
 
     while (std::getline(fin, line)) {
         std::string trimmed = trim(line);
+
+        // Check for code block fence (e.g., ``` or ```bash)
+        if (trimmed.size() >= 3 && trimmed.substr(0, 3) == "```") {
+            in_code_block = !in_code_block;  // Toggle the code block state
+            if (!currentContent.empty())
+                currentContent += "\n";
+            currentContent += line;  // Include the code fence in the content
+            continue;
+        }
+
+        // If inside a code block, treat every line as normal content
+        if (in_code_block) {
+            if (!currentContent.empty())
+                currentContent += "\n";
+            currentContent += line;
+            continue;
+        }
+
+        // If the line is empty, skip it (unless you want to preserve empty lines outside code blocks)
         if (trimmed.empty())
             continue;
 
-        // Check if the line is a node header (starts with '#')
+        // Check if the line is a header (starts with '#')
         if (trimmed[0] == '#') {
-            // Save content to previous node if any
+            // Save the content of the previous node, if any
             if (!nodes.empty()) {
                 nodes.back().content = currentContent;
                 currentContent.clear();
@@ -123,7 +143,7 @@ int main() {
             Node newNode;
             newNode.id = nodes.size() + 1;
 
-            // Count number of '#' characters to determine the level
+            // Count number of '#' characters to determine the header level
             int levelCount = 0;
             size_t pos = 0;
             while (pos < trimmed.size() && trimmed[pos] == '#') {
@@ -131,6 +151,7 @@ int main() {
                 ++pos;
             }
             newNode.level = levelCount;
+
             // Skip any additional whitespace after the '#' characters
             while (pos < trimmed.size() && std::isspace(static_cast<unsigned char>(trimmed[pos]))) {
                 ++pos;
@@ -147,13 +168,13 @@ int main() {
             }
             nodes.push_back(newNode);
         } else {
-            // Append line to current node's content (with newline if needed)
+            // Append the line to the current node's content (trimmed outside code blocks)
             if (!currentContent.empty())
                 currentContent += "\n";
             currentContent += trimmed;
         }
     }
-    // Save the last node's content
+    // Save the last node's content if there is one
     if (!nodes.empty()) {
         nodes.back().content = currentContent;
     }
