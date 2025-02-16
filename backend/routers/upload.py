@@ -42,7 +42,7 @@ async def create_node(data: createNodeRequest):
 
 @router.post("/create_edge")
 async def create_edge(data: createEdgeRequest):
-    user_directory = f"./Userdata/{data.user}"
+    user_directory = f"./UserData/{data.user}"
     if not os.path.exists(user_directory) :
         return {"message": "User directory not found"}
     Project = GraphLoader(data.projectId, user_directory)
