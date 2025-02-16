@@ -51,6 +51,11 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const { giveContent } = useNodeContent();
-const content = computed(() => giveContent(props.nodeData));
+const content = computed(() => filterContent(giveContent(props.nodeData)));
+const filterContent = (content) => {
+    // remove the space betweeen \n and ```, ``` and \n, because it will cause the code block not working
+    // ex: \n   ``` -> \n\n```, ```  \n -> ```\n\n
+    return content.replace(/\n\s*```/g, '\n\n```').replace(/```\s*\n/g, '```\n\n');
+};
 
 </script>
